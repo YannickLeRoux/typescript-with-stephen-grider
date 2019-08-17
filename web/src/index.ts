@@ -4,8 +4,8 @@ console.log('Hi there!');
 
 const user = new User({ name: 'yannick', age: 20 });
 
-console.log(user.get('age'));
+user.on('change', () => {});
 
-user.set({ name: 'jo', age: 999 });
+user.on('click', () => {});
 
-console.log(user.get('name'));
+console.log(user);
