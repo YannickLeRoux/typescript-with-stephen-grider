@@ -1,11 +1,6 @@
+import axios from 'axios';
 import { User } from './models/User';
 
-console.log('Hi there!');
+const user = new User({ name: 'NEW entry', age: 9999 });
 
-const user = new User({ name: 'yannick', age: 20 });
-
-user.on('change', () => {});
-
-user.on('click', () => {});
-
-console.log(user);
+user.save();
