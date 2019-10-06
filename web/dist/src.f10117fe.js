@@ -117,7 +117,220 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"node_modules/axios/lib/helpers/bind.js":[function(require,module,exports) {
+})({"src/views/CollectionView.ts":[function(require,module,exports) {
+"use strict";
+
+exports.__esModule = true;
+
+var CollectionView =
+/** @class */
+function () {
+  function CollectionView(parent, collection) {
+    this.parent = parent;
+    this.collection = collection;
+  }
+
+  CollectionView.prototype.render = function () {
+    var templateElement = document.createElement('template');
+    console.log('render', this.collection.models);
+
+    for (var _i = 0, _a = this.collection.models; _i < _a.length; _i++) {
+      var model = _a[_i];
+      console.log('model', model);
+      var itemParent = document.createElement('div');
+      this.renderItem(model, itemParent);
+      templateElement.content.append(itemParent);
+    }
+
+    this.parent.append(templateElement.content);
+  };
+
+  return CollectionView;
+}();
+
+exports.CollectionView = CollectionView;
+},{}],"src/views/View.ts":[function(require,module,exports) {
+"use strict";
+
+exports.__esModule = true;
+
+var View =
+/** @class */
+function () {
+  function View(parent, model) {
+    this.parent = parent;
+    this.model = model;
+    this.regions = {};
+    this.bindModel();
+  }
+
+  View.prototype.regionsMap = function () {
+    return {};
+  };
+
+  View.prototype.eventsMap = function () {
+    return {};
+  };
+
+  View.prototype.bindModel = function () {
+    var _this = this;
+
+    this.model.on('change', function () {
+      _this.render();
+    });
+  };
+
+  View.prototype.bindEvents = function (fragment) {
+    var eventsMap = this.eventsMap();
+
+    var _loop_1 = function _loop_1(eventKey) {
+      var _a = eventKey.split(':'),
+          eventName = _a[0],
+          selector = _a[1];
+
+      fragment.querySelectorAll(selector).forEach(function (element) {
+        element.addEventListener(eventName, eventsMap[eventKey]);
+      });
+    };
+
+    for (var eventKey in eventsMap) {
+      _loop_1(eventKey);
+    }
+  };
+
+  View.prototype.mapRegions = function (fragment) {
+    var regionsMap = this.regionsMap();
+
+    for (var key in regionsMap) {
+      var selector = regionsMap[key];
+      var element = fragment.querySelector(selector);
+
+      if (element) {
+        this.regions[key] = element;
+      }
+    }
+  };
+
+  View.prototype.onRender = function () {};
+
+  View.prototype.render = function () {
+    this.parent.innerHTML = '';
+    var templateElement = document.createElement('template');
+    templateElement.innerHTML = this.template();
+    this.bindEvents(templateElement.content);
+    this.mapRegions(templateElement.content);
+    this.onRender();
+    this.parent.append(templateElement.content);
+  };
+
+  return View;
+}();
+
+exports.View = View;
+},{}],"src/views/UserShow.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+exports.__esModule = true;
+
+var View_1 = require("./View");
+
+var UserShow =
+/** @class */
+function (_super) {
+  __extends(UserShow, _super);
+
+  function UserShow() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  UserShow.prototype.template = function () {
+    return "\n    <div>\n      <h1>User Details</h1>\n      <div>User name: " + this.model.get('name') + "</div>\n      <div>User age: " + this.model.get('age') + "</div>\n    </div>\n    ";
+  };
+
+  return UserShow;
+}(View_1.View);
+
+exports.UserShow = UserShow;
+},{"./View":"src/views/View.ts"}],"src/views/UserList.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+exports.__esModule = true;
+
+var CollectionView_1 = require("./CollectionView");
+
+var UserShow_1 = require("./UserShow");
+
+var UserList =
+/** @class */
+function (_super) {
+  __extends(UserList, _super);
+
+  function UserList() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  UserList.prototype.renderItem = function (model, itemParent) {
+    console.log('UserShow');
+    new UserShow_1.UserShow(itemParent, model).render();
+  };
+
+  return UserList;
+}(CollectionView_1.CollectionView);
+
+exports.UserList = UserList;
+},{"./CollectionView":"src/views/CollectionView.ts","./UserShow":"src/views/UserShow.ts"}],"node_modules/axios/lib/helpers/bind.js":[function(require,module,exports) {
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -1093,7 +1306,7 @@ module.exports = function xhrAdapter(config) {
   });
 };
 
-},{"./../utils":"node_modules/axios/lib/utils.js","./../core/settle":"node_modules/axios/lib/core/settle.js","./../helpers/buildURL":"node_modules/axios/lib/helpers/buildURL.js","./../helpers/parseHeaders":"node_modules/axios/lib/helpers/parseHeaders.js","./../helpers/isURLSameOrigin":"node_modules/axios/lib/helpers/isURLSameOrigin.js","../core/createError":"node_modules/axios/lib/core/createError.js","./../helpers/cookies":"node_modules/axios/lib/helpers/cookies.js"}],"../../../../.nvm/versions/node/v10.15.1/lib/node_modules/parcel-bundler/node_modules/process/browser.js":[function(require,module,exports) {
+},{"./../utils":"node_modules/axios/lib/utils.js","./../core/settle":"node_modules/axios/lib/core/settle.js","./../helpers/buildURL":"node_modules/axios/lib/helpers/buildURL.js","./../helpers/parseHeaders":"node_modules/axios/lib/helpers/parseHeaders.js","./../helpers/isURLSameOrigin":"node_modules/axios/lib/helpers/isURLSameOrigin.js","../core/createError":"node_modules/axios/lib/core/createError.js","./../helpers/cookies":"node_modules/axios/lib/helpers/cookies.js"}],"../../../../.nvm/versions/node/v12.8.0/lib/node_modules/parcel-bundler/node_modules/process/browser.js":[function(require,module,exports) {
 
 // shim for using process in browser
 var process = module.exports = {}; // cached from whatever global is present so that test runners that stub it
@@ -1403,7 +1616,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-},{"./utils":"node_modules/axios/lib/utils.js","./helpers/normalizeHeaderName":"node_modules/axios/lib/helpers/normalizeHeaderName.js","./adapters/http":"node_modules/axios/lib/adapters/xhr.js","./adapters/xhr":"node_modules/axios/lib/adapters/xhr.js","process":"../../../../.nvm/versions/node/v10.15.1/lib/node_modules/parcel-bundler/node_modules/process/browser.js"}],"node_modules/axios/lib/helpers/isAbsoluteURL.js":[function(require,module,exports) {
+},{"./utils":"node_modules/axios/lib/utils.js","./helpers/normalizeHeaderName":"node_modules/axios/lib/helpers/normalizeHeaderName.js","./adapters/http":"node_modules/axios/lib/adapters/xhr.js","./adapters/xhr":"node_modules/axios/lib/adapters/xhr.js","process":"../../../../.nvm/versions/node/v12.8.0/lib/node_modules/parcel-bundler/node_modules/process/browser.js"}],"node_modules/axios/lib/helpers/isAbsoluteURL.js":[function(require,module,exports) {
 'use strict';
 
 /**
@@ -1830,7 +2043,43 @@ module.exports.default = axios;
 
 },{"./utils":"node_modules/axios/lib/utils.js","./helpers/bind":"node_modules/axios/lib/helpers/bind.js","./core/Axios":"node_modules/axios/lib/core/Axios.js","./core/mergeConfig":"node_modules/axios/lib/core/mergeConfig.js","./defaults":"node_modules/axios/lib/defaults.js","./cancel/Cancel":"node_modules/axios/lib/cancel/Cancel.js","./cancel/CancelToken":"node_modules/axios/lib/cancel/CancelToken.js","./cancel/isCancel":"node_modules/axios/lib/cancel/isCancel.js","./helpers/spread":"node_modules/axios/lib/helpers/spread.js"}],"node_modules/axios/index.js":[function(require,module,exports) {
 module.exports = require('./lib/axios');
-},{"./lib/axios":"node_modules/axios/lib/axios.js"}],"src/models/User.ts":[function(require,module,exports) {
+},{"./lib/axios":"node_modules/axios/lib/axios.js"}],"src/models/Eventing.ts":[function(require,module,exports) {
+"use strict";
+
+exports.__esModule = true;
+
+var Eventing =
+/** @class */
+function () {
+  function Eventing() {
+    var _this = this;
+
+    this.events = {};
+
+    this.on = function (eventName, callback) {
+      var handlers = _this.events[eventName] || [];
+      handlers.push(callback);
+      _this.events[eventName] = handlers;
+    };
+
+    this.trigger = function (eventName) {
+      var handlers = _this.events[eventName];
+
+      if (!handlers || handlers.length === 0) {
+        return;
+      }
+
+      handlers.forEach(function (callback) {
+        callback();
+      });
+    };
+  }
+
+  return Eventing;
+}();
+
+exports.Eventing = Eventing;
+},{}],"src/models/Collection.ts":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -1843,79 +2092,286 @@ exports.__esModule = true;
 
 var axios_1 = __importDefault(require("axios"));
 
-var url = 'http://localhost:3000/users/';
+var Eventing_1 = require("./Eventing");
 
-var User =
+var Collection =
 /** @class */
 function () {
-  function User(data) {
-    this.data = data;
-    this.events = {};
+  function Collection(rootUrl, deserialize) {
+    this.rootUrl = rootUrl;
+    this.deserialize = deserialize;
+    this.models = [];
+    this.events = new Eventing_1.Eventing();
   }
 
-  User.prototype.get = function (propName) {
-    return this.data[propName];
-  };
+  Object.defineProperty(Collection.prototype, "on", {
+    get: function get() {
+      return this.events.on;
+    },
+    enumerable: true,
+    configurable: true
+  });
+  Object.defineProperty(Collection.prototype, "trigger", {
+    get: function get() {
+      return this.events.trigger;
+    },
+    enumerable: true,
+    configurable: true
+  });
 
-  User.prototype.set = function (update) {
-    Object.assign(this.data, update);
-  };
-
-  User.prototype.on = function (eventName, callback) {
-    var handlers = this.events[eventName] || [];
-    handlers.push(callback);
-    this.events[eventName] = handlers;
-  };
-
-  User.prototype.trigger = function (eventName) {
-    var handlers = this.events[eventName];
-
-    if (!handlers || handlers.length === 0) {
-      return;
-    }
-
-    handlers.forEach(function (callback) {
-      callback();
-    });
-  };
-
-  User.prototype.fetch = function () {
+  Collection.prototype.fetch = function () {
     var _this = this;
 
-    axios_1["default"].get(url + this.get('id')).then(function (response) {
-      _this.set(response.data);
+    axios_1["default"].get(this.rootUrl).then(function (response) {
+      response.data.forEach(function (value) {
+        _this.models.push(_this.deserialize(value));
+      });
     });
+    this.trigger('change');
   };
 
-  User.prototype.save = function () {
-    var id = this.get('id');
-
-    if (id) {
-      //put
-      axios_1["default"].put(url + id, this.data);
-    } else {
-      //post
-      axios_1["default"].post(url, this.data);
-    }
-  };
-
-  return User;
+  return Collection;
 }();
 
-exports.User = User;
-},{"axios":"node_modules/axios/index.js"}],"src/index.ts":[function(require,module,exports) {
+exports.Collection = Collection;
+},{"axios":"node_modules/axios/index.js","./Eventing":"src/models/Eventing.ts"}],"src/models/Model.ts":[function(require,module,exports) {
 "use strict";
 
 exports.__esModule = true;
 
+var Model =
+/** @class */
+function () {
+  function Model(attributes, sync, events) {
+    this.attributes = attributes;
+    this.sync = sync;
+    this.events = events;
+  }
+
+  Object.defineProperty(Model.prototype, "on", {
+    get: function get() {
+      return this.events.on;
+    },
+    enumerable: true,
+    configurable: true
+  });
+  Object.defineProperty(Model.prototype, "trigger", {
+    // short syntax:  on = this.events.on;
+    get: function get() {
+      return this.events.trigger;
+    },
+    enumerable: true,
+    configurable: true
+  });
+  Object.defineProperty(Model.prototype, "get", {
+    get: function get() {
+      return this.attributes.get;
+    },
+    enumerable: true,
+    configurable: true
+  });
+
+  Model.prototype.set = function (update) {
+    this.attributes.set(update);
+    this.events.trigger('change');
+  };
+
+  Model.prototype.fetch = function () {
+    var _this = this;
+
+    var id = this.attributes.get('id');
+
+    if (typeof id !== 'number') {
+      throw new Error('Cannot fetch without an id ');
+    }
+
+    this.sync.fetch(id).then(function (response) {
+      _this.set(response.data);
+    });
+  };
+
+  Model.prototype.save = function () {
+    var _this = this;
+
+    this.sync.save(this.attributes.getAll()).then(function (response) {
+      _this.trigger('save');
+    })["catch"](function () {
+      _this.trigger('error');
+    });
+  };
+
+  return Model;
+}();
+
+exports.Model = Model;
+},{}],"src/models/Attributes.ts":[function(require,module,exports) {
+"use strict";
+
+exports.__esModule = true;
+
+var Attributes =
+/** @class */
+function () {
+  function Attributes(data) {
+    var _this = this;
+
+    this.data = data;
+
+    this.get = function (key) {
+      return _this.data[key];
+    };
+  }
+
+  Attributes.prototype.set = function (update) {
+    Object.assign(this.data, update);
+  };
+
+  Attributes.prototype.getAll = function () {
+    return this.data;
+  };
+
+  return Attributes;
+}();
+
+exports.Attributes = Attributes;
+},{}],"src/models/APISync.ts":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+exports.__esModule = true;
+
+var axios_1 = __importDefault(require("axios"));
+
+var APISync =
+/** @class */
+function () {
+  function APISync(rootUrl) {
+    this.rootUrl = rootUrl;
+  }
+
+  APISync.prototype.fetch = function (id) {
+    return axios_1["default"].get(this.rootUrl + "/" + id);
+  };
+
+  APISync.prototype.save = function (data) {
+    var id = data.id;
+
+    if (id) {
+      //put
+      return axios_1["default"].put(this.rootUrl + "/" + id, data);
+    } else {
+      //post
+      return axios_1["default"].post(this.rootUrl, data);
+    }
+  };
+
+  return APISync;
+}();
+
+exports.APISync = APISync;
+},{"axios":"node_modules/axios/index.js"}],"src/models/User.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+exports.__esModule = true;
+
+var Model_1 = require("./Model");
+
+var Attributes_1 = require("./Attributes");
+
+var Eventing_1 = require("./Eventing");
+
+var APISync_1 = require("./APISync");
+
+var Collection_1 = require("./Collection");
+
+var rootUrl = 'http://localhost:3000/users';
+
+var User =
+/** @class */
+function (_super) {
+  __extends(User, _super);
+
+  function User() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  User.buildUser = function (attrs) {
+    return new User(new Attributes_1.Attributes(attrs), new APISync_1.APISync(rootUrl), new Eventing_1.Eventing());
+  };
+
+  User.buildUserCollectiion = function () {
+    return new Collection_1.Collection(rootUrl, function (json) {
+      return User.buildUser(json);
+    });
+  };
+
+  User.prototype.setRandomAge = function () {
+    var age = Math.round(Math.random() * 100);
+    this.set({
+      age: age
+    });
+  };
+
+  return User;
+}(Model_1.Model);
+
+exports.User = User;
+},{"./Model":"src/models/Model.ts","./Attributes":"src/models/Attributes.ts","./Eventing":"src/models/Eventing.ts","./APISync":"src/models/APISync.ts","./Collection":"src/models/Collection.ts"}],"src/index.ts":[function(require,module,exports) {
+"use strict";
+
+exports.__esModule = true;
+
+var UserList_1 = require("./views/UserList");
+
+var Collection_1 = require("./models/Collection");
+
 var User_1 = require("./models/User");
 
-var user = new User_1.User({
-  name: 'NEW entry',
-  age: 9999
+var users = new Collection_1.Collection('http://localhost:3000/users', function (json) {
+  return User_1.User.buildUser(json);
 });
-user.save();
-},{"./models/User":"src/models/User.ts"}],"../../../../.nvm/versions/node/v10.15.1/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+console.log(users, 'users');
+users.on('change', function () {
+  var root = document.getElementById('root');
+
+  if (root) {
+    console.log('if root');
+    new UserList_1.UserList(root, users).render();
+  }
+});
+users.fetch();
+},{"./views/UserList":"src/views/UserList.ts","./models/Collection":"src/models/Collection.ts","./models/User":"src/models/User.ts"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1943,7 +2399,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60928" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65115" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -2118,5 +2574,4 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../../../../.nvm/versions/node/v10.15.1/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","src/index.ts"], null)
-//# sourceMappingURL=/src.f10117fe.js.map
+},{}]},{},["node_modules/parcel/src/builtins/hmr-runtime.js","src/index.ts"], null)

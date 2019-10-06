@@ -1,6 +1,19 @@
-import axios from 'axios';
-import { User } from './models/User';
+import { UserList } from './views/UserList';
+import { Collection } from './models/Collection';
+import { UserProps, User } from './models/User';
 
-const user = new User({ name: 'NEW entry', age: 9999 });
+const users = new Collection('http://localhost:3000/users', (json: UserProps) => {
+  return User.buildUser(json);
+});
 
-user.save();
+console.log(users, 'users');
+
+users.on('change', () => {
+  const root = document.getElementById('root');
+
+  if (root) {
+    console.log('if root');
+    new UserList(root, users).render();
+  }
+});
+users.fetch();
