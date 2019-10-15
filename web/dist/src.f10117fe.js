@@ -120,7 +120,24 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 })({"src/views/CollectionView.ts":[function(require,module,exports) {
 "use strict";
 
-exports.__esModule = true;
+var __values = this && this.__values || function (o) {
+  var m = typeof Symbol === "function" && o[Symbol.iterator],
+      i = 0;
+  if (m) return m.call(o);
+  return {
+    next: function next() {
+      if (o && i >= o.length) o = void 0;
+      return {
+        value: o && o[i++],
+        done: !o
+      };
+    }
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var CollectionView =
 /** @class */
@@ -131,15 +148,28 @@ function () {
   }
 
   CollectionView.prototype.render = function () {
-    var templateElement = document.createElement('template');
-    console.log('render', this.collection.models);
+    var e_1, _a;
 
-    for (var _i = 0, _a = this.collection.models; _i < _a.length; _i++) {
-      var model = _a[_i];
-      console.log('model', model);
-      var itemParent = document.createElement('div');
-      this.renderItem(model, itemParent);
-      templateElement.content.append(itemParent);
+    this.parent.innerHTML = '';
+    var templateElement = document.createElement('template');
+
+    try {
+      for (var _b = __values(this.collection.models), _c = _b.next(); !_c.done; _c = _b.next()) {
+        var model = _c.value;
+        var itemParent = document.createElement('div');
+        this.renderItem(model, itemParent);
+        templateElement.content.append(itemParent);
+      }
+    } catch (e_1_1) {
+      e_1 = {
+        error: e_1_1
+      };
+    } finally {
+      try {
+        if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+      } finally {
+        if (e_1) throw e_1.error;
+      }
     }
 
     this.parent.append(templateElement.content);
@@ -2088,7 +2118,9 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var axios_1 = __importDefault(require("axios"));
 
@@ -2122,12 +2154,13 @@ function () {
   Collection.prototype.fetch = function () {
     var _this = this;
 
-    axios_1["default"].get(this.rootUrl).then(function (response) {
+    axios_1.default.get(this.rootUrl).then(function (response) {
       response.data.forEach(function (value) {
         _this.models.push(_this.deserialize(value));
       });
+
+      _this.trigger('change');
     });
-    this.trigger('change');
   };
 
   return Collection;
@@ -2399,7 +2432,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65115" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51466" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -2575,3 +2608,4 @@ function hmrAcceptRun(bundle, id) {
   }
 }
 },{}]},{},["node_modules/parcel/src/builtins/hmr-runtime.js","src/index.ts"], null)
+//# sourceMappingURL=/src.f10117fe.js.map
